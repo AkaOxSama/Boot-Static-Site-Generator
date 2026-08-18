@@ -19,30 +19,4 @@ class HTMLNode():
         return html_format
 
     def __repr__(self):
-        representation = f"TAG: {self.tag}\n VALUE: {self.value}\n"
-        representation += "CHILDREN LIST:\n"
-        if self.children is not None:
-            for child in self.children:
-                representation += f"CHILD: {child}\n"
-        else:
-            representation += "0\n"
-        representation += "PROPS\n"
-
-        if self.props is not None:
-            for key, value in self.props.items():
-                representation += f"MK_TAG = {key}: HTML = {value}\n"
-        else:
-            representation += "0\n"
-
-        return representation
-
-    def __eq__(self, other):
-        if not isinstance(other, HTMLNode):
-            return NotImplementedError
-
-        return (
-            self.tag == other.tag and
-            self.value == other.value and
-            self.children == other.children and
-            self.props == other.props
-        )
+        return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
