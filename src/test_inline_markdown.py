@@ -1,6 +1,8 @@
 import unittest
 
-from md_to_textnode import split_nodes_delimeter
+from inline_markdow import (
+    split_nodes_delimeter, extract_markdown_images, extract_markdown_links,
+)
 
 from textnode import TextNode, TextType
 
@@ -116,4 +118,53 @@ class TestInLineMarkdown(unittest.TestCase):
         self.assertEqual(
             str(context.exception),
             "invalid Markdown syntax, formatted section not closed"
+        )
+
+    # Test for functions to extract links or images from markdown text
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_links(
+            "This link [link](https://localhost.8888) is very safe"
+        )
+        self.assertListEqual([("link", "https://localhost.8888")], matches)
+
+    def test_extract_markdown_images_with_multiple_formats(self):
+        matches = extract_markdown_images(
+            "This text is very ![simple](https://i.imgur.com/QEHxooZ.mp4) but this can be very [difficult](https://www.cia.com)"
+        )
+        self.assertListEqual([("simple", "https://i.imgur.com/QEHxooZ.mp4")], matches)
+
+    def test_extract_markdown_links_with_multiple_formats(self):
+        matches = extract_markdown_links(
+            "This text is very ![simple](https://i.imgur.com/QEHxooZ.mp4) but this can be very [difficult](https://www.cia.com)"
+        )
+        self.assertListEqual([("difficult", "https://www.cia.com")], matches)
+
+    def test_extract_markdown_images_with_multiple_images(self):
+        matches = extract_markdown_images(
+            "This text contains two ![image1](https://i.imgur.com/dfbd34fc.png) ![image2](https://i.imgur.com/h34bdsn1dd.jpg) images"
+        )
+        self.assertListEqual(
+            [
+                ("image1", "https://i.imgur.com/dfbd34fc.png"),
+                ("image2", "https://i.imgur.com/h34bdsn1dd.jpg")
+            ],
+            matches
+        )
+
+    def test_extract_markdown_links_with_multiple_links(self):
+        matches = extract_markdown_links(
+            "This text contains two [link1](https://www.darkweb.com) [link2](https://www.whiteweb.com) links"
+        )
+        self.assertListEqual(
+            [
+                ("link1", "https://www.darkweb.com"),
+                ("link2", "https://www.whiteweb.com")
+            ],
+            matches
         )

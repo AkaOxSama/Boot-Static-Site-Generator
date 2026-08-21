@@ -1,6 +1,7 @@
 import re
 from textnode import *
 
+# Function to split raw text into TextNodes with different TextType
 def split_nodes_delimeter(old_nodes: list[TextNode], delimeter: str, text_type: TextType) -> list[TextNode]:
     text_nodes_list = []
 
@@ -31,6 +32,17 @@ def split_nodes_delimeter(old_nodes: list[TextNode], delimeter: str, text_type: 
         text_nodes_list.extend(split_nodes)
 
     return text_nodes_list
+
+
+# Function to extract images from markdown text
+def extract_markdown_images(text: str) -> list[tuple["str", "str"]]:
+    matches = re.findall(r"!\[(.*?)]\((.*?)\)", text)
+    return matches
+
+# Function to extract links from markdown text
+def extract_markdown_links(text: str) -> list[tuple["str", "str"]]:
+    matches = re.findall(r"(?<!!)\[(.*?)]\((.*?)\)", text)
+    return matches
 
         
         
