@@ -1,6 +1,6 @@
 import unittest
 
-from blocks_markdown import markdown_to_blocks
+from blocks_markdown import *
 
 class TestBlocksMarkdown(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -62,3 +62,72 @@ The bee, of course, flies anyway because bees don't care what humans think is im
                 "Its wings are too small to get its fat little body off the ground.\nThe bee, of course, flies anyway because bees don't care what humans think is impossible."
             ]
         )
+
+    
+    # Test for Block Types
+    def test_block_to_BlockType_heading(self):
+        block = "# This is a heading"
+        b_type = block_to_block_type(block)
+        self.assertEqual(
+            b_type, BlockType.HEADING
+        )
+    
+    def test_block_to_BlockType_heading_no_whitespace(self):
+        block = "#This is a heading"
+        
+        with self.assertRaises(Exception) as context:
+            block_to_block_type(block)
+
+        self.assertEqual(
+            str(context.exception),
+            "invalid heading md syntax, missing ' ' after '#'"
+        )
+
+    def test_block_to_BlockType_heading_invalid_ch(self):
+        block = "####### This heading has to many '#'"
+
+        with self.assertRaises(Exception) as context:
+            block_to_block_type(block)
+
+        self.assertEqual(
+            str(context.exception),
+            "invalid heading md syntax, more than 6 '#' characters found"
+        )
+
+    def test_block_to_BlockType_code(self):
+        block = "```\n This is real code.```"
+        b_type = block_to_block_type(block)
+        self.assertEqual(
+            b_type, BlockType.CODE
+        )
+
+    def test_block_to_BlockType_quote(self):
+        block = ">'I am the Infinity War' - Ironman"
+        b_type = block_to_block_type(block)
+        self.assertEqual(
+            b_type, BlockType.QUOTE
+        )
+
+    def test_block_to_BlockType_unordered_list(self):
+        block = "- This is a very unordered\n-List."
+        b_type = block_to_block_type(block)
+        self.assertEqual(
+            b_type, BlockType.UNORDERED_LIST
+        )
+
+    def test_block_to_BlockType_ordered_list(self):
+        block = "1. This list is ordered\n2. Like my room."
+        b_type = block_to_block_type(block)
+        self.assertEqual(
+            b_type, BlockType.ORDERED_LIST
+        )
+
+    def test_block_to_BlockType_paragraph(self):
+        block = "This is a normal paragraph\nWith nothing shady going on in it"
+        b_type = block_to_block_type(block)
+        self.assertEqual(
+            b_type, BlockType.PARAGRAPH
+        )
+
+if __name__ == "__main__":
+    unittest.main()
