@@ -89,35 +89,66 @@ def block_to_html_syntax(block: str, block_type: BlockType) -> ParentNode:
             return ParentNode(f"h{i}", children)
         
         case BlockType.QUOTE:
-            text = block[2:] if block[1] == " " else block[1:]
+            quote_list = []
+            list_of_text = []
+            for line in block.split("\n"):
+                if line == "":
+                    continue
+                if line.startswith("> "):
+                    list_of_text.append(line[2:])
+                    continue
+                if line.startswith(">"):
+                    list_of_text.append(line[1:])
+                    continue
+            text = " ".join(list_of_text)
             children = text_to_children(text)
-            return ParentNode(f"blockquote", children)
+            return ParentNode("blockquote", children)
 
         case BlockType.UNORDERED_LIST:
-            list_of_text = [lst for lst in block.split("\n") if lst != ""]
-            text = ""
-            for txt in list_of_text:
-                text += f"<li>{txt}</li>"
+            children_list = []
+            list_of_text = []
 
-            children = text_to_children(text)
-            return ParentNode("ul", children)
+            for line in block.split("\n"):
+                if line == "":
+                    continue
+                if line.startswith("- "):
+                    list_of_text.append(line[2:])
+                    continue
+                if line[0].isdigit():
+                    list_of_text.append(line[3:])
+                    continue
+                         
+            for lst in list_of_text:
+                children_list.append(ParentNode("li", text_to_children(lst)))
+
+            return ParentNode("ul", children_list)
 
         case BlockType.ORDERED_LIST:
-            list_of_text = [lst for lst in block.split("\n") if lst != ""]
-            text = ""
-            for txt in list_of_text:
-                text += f"<li>{txt}</li>"
-            
-            children = text_to_children(text)
-            return ParentNode("ol", children)
+            children_list = []
+            list_of_text = []
 
+            for line in block.split("\n"):
+                if line == "":
+                    continue
+                if line.startswith("- "):
+                    list_of_text.append(line[2:])
+                    continue
+                if line[0].isdigit():
+                    list_of_text.append(line[3:])
+                    continue
+                         
+            for lst in list_of_text:
+                children_list.append(ParentNode("li", text_to_children(lst)))
+
+            return ParentNode("ol", children_list)
+            
         case BlockType.PARAGRAPH:
             text = block.replace("\n", " ")
             children = text_to_children(text)
             return ParentNode("p", children)
 
         case BlockType.CODE:
-            text = block.strip("\n").strip("```").strip("\n")
+            text = block[3:-3].lstrip("\n")
             node = TextNode(text, TextType.CODE)
             child = text_node_to_html_node(node)
             return ParentNode("pre", [child])
