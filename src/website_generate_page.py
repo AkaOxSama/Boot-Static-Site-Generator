@@ -22,7 +22,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
         html_body = html_body.replace("{{ Title }}", title).replace("{{ Content }}", html_text)
 
     # Create a file index.html in the public directory
-    website_file = f"{dest_path}/index.html"
-    open(website_file, "a")
-    with open(website_file, "w") as f:
+    
+    open(dest_path, "a")
+    with open(dest_path, "w") as f:
         f.write(html_body)
