@@ -24,16 +24,15 @@ def generate_page(from_path: str, template_path: str, dest_path: str, basepath: 
     with open(template_path) as html_template:
         html_body = html_template.read()
         # create a html text with the title and content replaced with the apropiate variables
-        html_body = html_body.replace("{{ Title }}", title).replace("{{ Content }}", html_text)
-        html_body = html_body.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
+    html_body = html_body.replace("{{ Title }}", title).replace("{{ Content }}", html_text)
+    html_body = html_body.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
 
     # Create a file index.html in the public directory
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
         os.makedirs(dest_dir_path, exist_ok=True)
-    open(dest_path, "a")
-    with open(dest_path, "w") as f:
-        f.write(html_body)
+    to_file = open(dest_path, "w")
+    to_file.write(html_body)
 
 
 # Recursive webpage generator
