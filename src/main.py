@@ -1,31 +1,34 @@
 import os
+import sys
 import shutil
-import pathlib
 
-from website_copy_static import duplicate_static_dir
-from website_generate_page import generate_pages_recursive
+from website_copy_static import copy_static_recursive
+from gencontent import generate_pages_recursive
 
+basepath = sys.argv[0] if sys.argv[0] is not None else "/"
 
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-static_dir = os.path.join(script_dir, "..", "static")
-public_dir = os.path.join(script_dir, "..", "public")
-content_dir = os.path.join(script_dir, "..", "content")
-template_path = os.path.join(script_dir, "..", "template.html")
+static_path = "./static"
+public_path = "./public"
+content_path = "./content"
+template_path = "./template.html"
+docs_path = "./docs"
 
 
 def main():
-   print(f"Generating a clean public directory in: {public_dir}...\n")
-   duplicate_static_dir(static_dir, public_dir)
+   print("Deleting docs directory...")
+   if os.path.exists(docs_path):
+      shutil.rmtree(docs_path)
+
+   print(f"Generating a clean docs directory in: {docs_path}...\n")
+   copy_static_recursive(static_path, docs_path)
    print("Creating contents for the webpage...\n")
    print("\n")
    
-   dir_contents = os.listdir(content_dir)
    print("Creating web pages...\n")
-   generate_pages_recursive(dir_contents, template_path, public_dir)
+   generate_pages_recursive(content_path, template_path, docs_path, basepath)
    
 
    
 
-if __name__ == "__main__":
-   main()
+
+main()

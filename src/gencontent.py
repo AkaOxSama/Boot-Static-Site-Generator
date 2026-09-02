@@ -1,12 +1,12 @@
 import os
-import pathlib
+from pathlib import Path
 
 from website_extract_title import extract_title
 from blocks_markdown import markdown_to_html_node
 
 
 # Webpage generator
-def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str) -> None:
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
     # Read the index.md file and store it in a variable
@@ -25,16 +25,35 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
         html_body = html_template.read()
         # create a html text with the title and content replaced with the apropiate variables
         html_body = html_body.replace("{{ Title }}", title).replace("{{ Content }}", html_text)
+        html_body = html_body.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
 
     # Create a file index.html in the public directory
-    
+    dest_dir_path = os.path.dirname(dest_path)
+    if dest_dir_path != "":
+        os.makedirs(dest_dir_path, exist_ok=True)
     open(dest_path, "a")
     with open(dest_path, "w") as f:
         f.write(html_body)
 
 
 # Recursive webpage generator
-def generate_pages_recursive(dir_path_content: list[str], template_path: str, des_dir_path: str):
+
+def generate_pages_recursive(
+        dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str
+) -> None:
+    for filename in os.listdir(dir_path_content):
+        cont_path = os.path.join(dir_path_content, filename)
+        dest_path = os.path.join(dest_dir_path, filename)
+
+        if os.path.isfile(cont_path):
+            dest_path = Path(dest_path).with_suffix(".html")
+            generate_page(cont_path, template_path, dest_path, basepath)
+        else:
+            generate_pages_recursive(cont_path, template_path, dest_path, basepath)
+
+
+
+"""def generate_pages_recursive(dir_path_content: list[str], template_path: str, des_dir_path: str):
     des_p = pathlib.Path(des_dir_path)
     
     for content in dir_path_content:
@@ -60,8 +79,7 @@ def generate_pages_recursive(dir_path_content: list[str], template_path: str, de
                 new_des_path.absolute()
             )
 
-            os.chdir(old_dir)
+            os.chdir(old_dir)"""
 
-os.chdir("/home/akaox/BootProj/Boot-Static-Site-Generator/content")
 
-generate_pages_recursive(os.listdir(), "/home/akaox/BootProj/Boot-Static-Site-Generator/template.html", "/home/akaox/BootProj/Boot-Static-Site-Generator/public")
+
